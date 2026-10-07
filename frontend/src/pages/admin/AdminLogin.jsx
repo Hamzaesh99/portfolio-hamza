@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
-import { Globe, Sun, Moon } from 'lucide-react'
+import { Globe, Sun, Moon, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useThemeLanguage } from '../../context/ThemeLanguageContext.jsx'
 
@@ -152,20 +152,28 @@ export default function AdminLogin() {
               <button
                 type="button"
                 onClick={() => setShowPass(!showPass)}
+                aria-label={showPass ? (isAr ? 'إخفاء كلمة المرور' : 'Hide password') : (isAr ? 'إظهار كلمة المرور' : 'Show password')}
+                title={showPass ? (isAr ? 'إخفاء كلمة المرور' : 'Hide password') : (isAr ? 'إظهار كلمة المرور' : 'Show password')}
                 style={{
                   position: 'absolute',
-                  right: isAr ? 'auto' : '0.75rem',
-                  left: isAr ? '0.75rem' : 'auto',
+                  right: isAr ? 'auto' : '0.85rem',
+                  left: isAr ? '0.85rem' : 'auto',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
-                  color: 'var(--color-text-muted)',
-                  fontSize: '1rem'
+                  padding: '6px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: showPass ? '#3b82f6' : '#64748b',
+                  zIndex: 3,
+                  transition: 'color 0.2s',
+                  borderRadius: '6px'
                 }}
               >
-                {showPass ? '🙈' : '👁️'}
+                {showPass ? <EyeOff size={19} /> : <Eye size={19} />}
               </button>
             </div>
           </div>
