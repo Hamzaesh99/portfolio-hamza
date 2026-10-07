@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "portfolio-hamza",
+  "main": "worker/index.js",
+  "compatibility_date": "2024-09-23",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "assets": {
+    "directory": "frontend/dist",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "single-page-application"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "portfolio-db",
+      "database_id": "34c1d47b-65ac-42b2-9ed6-bc5a0a946dfa"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "STORAGE",
+      "id": "91f83c42cddd4070b150c6719f2a65f4"
+    }
+  ]
+}

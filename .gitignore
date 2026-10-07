@@ -43,3 +43,9 @@ Thumbs.db
 backend/data/
 *.db
 *.db-journal
+
+# Cloudflare & Wrangler
+.wrangler/
+.dev.vars
+backend/dump.json
+
