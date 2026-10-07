@@ -7,7 +7,7 @@ import fs from 'fs'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const DB_PATH = process.env.DB_PATH || './data/portfolio.db'
+const DB_PATH = process.env.DB_PATH || (process.env.VERCEL ? '/tmp/portfolio.db' : './data/portfolio.db')
 const dbFilePath = path.resolve(DB_PATH)
 
 // Ensure data directory exists

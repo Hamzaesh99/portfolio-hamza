@@ -5,7 +5,7 @@ import { projectsAPI } from '../../lib/api.js'
 import { useInView } from '../hooks/useInView.js'
 import { useThemeLanguage } from '../../context/ThemeLanguageContext.jsx'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api')
 
 function getImageUrl(url) {
   if (!url) return null

@@ -74,6 +74,26 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Static files for uploads
 app.use('/uploads', express.static(path.join(__dirname, '..', process.env.UPLOADS_DIR || 'uploads')));
 
+// Ensure database is initialized before any route handles requests in serverless environments
+let dbInitialized = false;
+let dbInitPromise = null;
+
+app.use(async (req, res, next) => {
+  if (process.env.VERCEL && !dbInitialized) {
+    try {
+      if (!dbInitPromise) {
+        dbInitPromise = initDatabase().then(() => {
+          dbInitialized = true;
+        });
+      }
+      await dbInitPromise;
+    } catch (err) {
+      return next(err);
+    }
+  }
+  next();
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
@@ -112,6 +132,8 @@ async function startServer() {
   }
 }
 
-startServer();
+if (!process.env.VERCEL) {
+  startServer();
+}
 
 export default app;

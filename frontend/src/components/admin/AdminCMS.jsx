@@ -7,7 +7,7 @@ import { useThemeLanguage } from '../../context/ThemeLanguageContext.jsx'
 import { uploadsAPI } from '../../lib/api.js'
 import defaultHeroPhoto from '../../assets/hero.jpg'
 
-const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '')
+const API_BASE = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api')).replace('/api', '')
 
 function formatPhotoSrc(url) {
   if (!url || !url.trim()) return defaultHeroPhoto

@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const UPLOADS_DIR = process.env.UPLOADS_DIR || './uploads';
+const UPLOADS_DIR = process.env.UPLOADS_DIR || (process.env.VERCEL ? '/tmp/uploads' : './uploads');
 const uploadsPath = path.resolve(UPLOADS_DIR);
 
 // Ensure uploads directory exists
