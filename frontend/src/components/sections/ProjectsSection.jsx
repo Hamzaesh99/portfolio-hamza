@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { projectsAPI } from '../../lib/api.js'
 import { useInView } from '../hooks/useInView.js'
 import { useThemeLanguage } from '../../context/ThemeLanguageContext.jsx'
+import { getLocalizedProject } from '../../lib/projectTranslations.js'
 
 const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api')
 
@@ -23,13 +24,12 @@ function normalizeUrl(url) {
    ProjectPreviewModal: Full details and multi-image gallery popup
    ========================================================================== */
 function ProjectPreviewModal({ project, isAr, onClose }) {
-  if (!project) return null
-
-  const images = (Array.isArray(project.images) && project.images.length > 0)
+  const images = (Array.isArray(project?.images) && project.images.length > 0)
     ? project.images
-    : (project.image_url ? [project.image_url] : [])
+    : (project?.image_url ? [project.image_url] : [])
 
   const [activeImg, setActiveImg] = useState(0)
+  const loc = getLocalizedProject(project, isAr ? 'ar' : 'en')
 
   // Arrow navigation:
   // In Arabic: Left advances to NEXT image, Right returns to PREVIOUS image.
@@ -52,8 +52,9 @@ function ProjectPreviewModal({ project, isAr, onClose }) {
   }
 
   useEffect(() => {
+    if (!project) return
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') onClose?.()
       if (e.key === 'ArrowLeft') handleLeftClick()
       if (e.key === 'ArrowRight') handleRightClick()
     }
@@ -63,7 +64,9 @@ function ProjectPreviewModal({ project, isAr, onClose }) {
       window.removeEventListener('keydown', handleKeyDown)
       document.body.style.overflow = ''
     }
-  }, [images.length, isAr])
+  }, [project, images.length, isAr])
+
+  if (!project) return null
 
   const currentSrc = images[activeImg] ? getImageUrl(images[activeImg]) : null
 
@@ -113,7 +116,7 @@ function ProjectPreviewModal({ project, isAr, onClose }) {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
             <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-text-primary, #fff)' }}>
-              {project.title}
+              {loc.title}
             </h3>
             {project.featured && (
               <span style={{
@@ -327,7 +330,7 @@ function ProjectPreviewModal({ project, isAr, onClose }) {
               whiteSpace: 'pre-line',
               margin: 0,
             }}>
-              {project.long_description || project.description}
+              {loc.long_description || loc.description}
             </p>
           </div>
 
@@ -419,6 +422,7 @@ function ProjectCard({ project, index, isAr, onPreview }) {
     : (project.image_url ? [project.image_url] : [])
 
   const [activeImg, setActiveImg] = useState(0)
+  const loc = getLocalizedProject(project, isAr ? 'ar' : 'en')
 
   // Arrow navigation:
   // In Arabic (RTL): Left arrow advances to NEXT image, Right arrow returns to PREVIOUS image.
@@ -603,9 +607,9 @@ function ProjectCard({ project, index, isAr, onPreview }) {
       {/* Body */}
       <div className="project-body">
         <h3 className="project-title" onClick={() => onPreview(project)} style={{ cursor: 'pointer' }}>
-          {project.title}
+          {loc.title}
         </h3>
-        <p className="project-desc">{project.description}</p>
+        <p className="project-desc">{loc.description}</p>
 
         <div className="project-tags">
           {(project.technologies || []).map(tech => (

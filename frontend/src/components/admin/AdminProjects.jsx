@@ -3,9 +3,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { projectsAPI, uploadsAPI } from '../../lib/api.js'
 import { useThemeLanguage } from '../../context/ThemeLanguageContext.jsx'
+import { autoTranslateArabic, getLocalizedProject } from '../../lib/projectTranslations.js'
 
 const EMPTY_FORM = {
-  title: '', description: '', long_description: '', technologies: '',
+  title: '', title_en: '', description: '', description_en: '', long_description: '', long_description_en: '', technologies: '',
   github_url: '', live_url: '', featured: false, status: 'published',
   image_url: '', images: []
 }
@@ -88,10 +89,14 @@ export default function AdminProjects() {
 
   const openEdit = (project) => {
     setSelected(project)
+    const locEn = getLocalizedProject(project, 'en')
     setForm({
       title: project.title || '',
+      title_en: project.title_en || locEn.title || '',
       description: project.description || '',
+      description_en: project.description_en || locEn.description || '',
       long_description: project.long_description || '',
+      long_description_en: project.long_description_en || locEn.long_description || '',
       technologies: Array.isArray(project.technologies) ? project.technologies.join(', ') : '',
       github_url: project.github_url || '',
       live_url: project.live_url || '',
@@ -238,6 +243,24 @@ export default function AdminProjects() {
     }
   }
 
+  const handleAutoTranslate = (e) => {
+    e?.preventDefault()
+    if (!form.title && !form.description) {
+      toast.error(isAr ? 'يرجى كتابة عنوان ووصف المشروع بالعربية أولاً.' : 'Please enter Arabic title and description first.')
+      return
+    }
+    const tTitle = autoTranslateArabic(form.title)
+    const tDesc = autoTranslateArabic(form.description)
+    const tLong = form.long_description ? autoTranslateArabic(form.long_description) : ''
+    setForm(f => ({
+      ...f,
+      title_en: tTitle,
+      description_en: tDesc,
+      long_description_en: tLong || tDesc,
+    }))
+    toast.success(isAr ? 'تم توليد الترجمة الإنجليزية تلقائياً بنجاح! 🌐' : 'English translations generated! 🌐')
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.title || !form.description || !form.technologies) {
@@ -247,8 +270,14 @@ export default function AdminProjects() {
 
     try {
       const finalUrls = await uploadAllImages()
+      const finalTitleEn = form.title_en?.trim() || autoTranslateArabic(form.title)
+      const finalDescEn = form.description_en?.trim() || autoTranslateArabic(form.description)
+      const finalLongEn = form.long_description_en?.trim() || (form.long_description ? autoTranslateArabic(form.long_description) : '')
       const payload = {
         ...form,
+        title_en: finalTitleEn,
+        description_en: finalDescEn,
+        long_description_en: finalLongEn,
         images: finalUrls,
         image_url: finalUrls[0] || '',
         technologies: form.technologies.split(',').map(t => t.trim()).filter(Boolean),
@@ -676,7 +705,7 @@ export default function AdminProjects() {
 
                   {/* Title */}
                   <div className="form-group">
-                    <label className="form-label">{isAr ? 'عنوان المشروع *' : 'Title *'}</label>
+                    <label className="form-label">{isAr ? 'عنوان المشروع (بالعربية) *' : 'Title (Arabic) *'}</label>
                     <input
                       type="text" className="form-input"
                       value={form.title}
@@ -688,7 +717,7 @@ export default function AdminProjects() {
 
                   {/* Description */}
                   <div className="form-group">
-                    <label className="form-label">{isAr ? 'الوصف المختصر *' : 'Short Description *'}</label>
+                    <label className="form-label">{isAr ? 'الوصف المختصر (بالعربية) *' : 'Short Description (Arabic) *'}</label>
                     <textarea
                       className="form-textarea" rows={3}
                       value={form.description}
@@ -696,6 +725,55 @@ export default function AdminProjects() {
                       placeholder={isAr ? 'نبذة موجزة توضح فكرة وأهمية المشروع...' : 'Brief description of the project...'}
                       required
                     />
+                  </div>
+
+                  {/* Automated English Translation Box */}
+                  <div style={{
+                    padding: '0.85rem 1rem',
+                    background: 'rgba(59, 130, 246, 0.05)',
+                    border: '1px solid rgba(59, 130, 246, 0.2)',
+                    borderRadius: '8px',
+                    marginBottom: '1rem',
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#93c5fd' }}>
+                        🌐 {isAr ? 'الترجمة الإنجليزية (تظهر تلقائياً لزوار الموقع بالإنجليزي)' : 'English Translation'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleAutoTranslate}
+                        className="btn btn-outline btn-sm"
+                        style={{ padding: '0.25rem 0.65rem', fontSize: '0.78rem' }}
+                      >
+                        ⚡ {isAr ? 'توليد الترجمة تلقائياً' : 'Auto-translate'}
+                      </button>
+                    </div>
+
+                    <div className="form-group" style={{ marginBottom: '0.6rem' }}>
+                      <label className="form-label" style={{ fontSize: '0.8rem' }}>
+                        {isAr ? 'عنوان المشروع بالإنجليزية' : 'English Project Title'}
+                      </label>
+                      <input
+                        type="text" className="form-input"
+                        value={form.title_en}
+                        onChange={e => setForm(f => ({ ...f, title_en: e.target.value }))}
+                        placeholder="e.g. Smart Real Estate Platform"
+                        dir="ltr"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label" style={{ fontSize: '0.8rem' }}>
+                        {isAr ? 'الوصف بالإنجليزية' : 'English Short Description'}
+                      </label>
+                      <textarea
+                        className="form-textarea" rows={2}
+                        value={form.description_en}
+                        onChange={e => setForm(f => ({ ...f, description_en: e.target.value }))}
+                        placeholder="e.g. An innovative system built to manage..."
+                        dir="ltr"
+                      />
+                    </div>
                   </div>
 
                   {/* Technologies */}

@@ -1,4 +1,5 @@
 import React from 'react'
+import { getLocalizedProject } from '../../lib/projectTranslations.js'
 
 export default function CVDocument({
   lang = 'ar',
@@ -498,6 +499,7 @@ export default function CVDocument({
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {featuredProjects.map((p, pIdx) => {
+                  const locP = getLocalizedProject(p, isAr ? 'ar' : 'en')
                   const pTechs = Array.isArray(p.technologies) ? p.technologies : []
                   return (
                     <div
@@ -511,7 +513,7 @@ export default function CVDocument({
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontWeight: 800, fontSize: '12.5px', color: '#0f172a' }}>
-                          {p.title}
+                          {locP.title}
                         </span>
                         {p.featured && (
                           <span style={{ fontSize: '10px', background: 'rgba(245, 158, 11, 0.15)', color: '#d97706', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
@@ -520,9 +522,9 @@ export default function CVDocument({
                         )}
                       </div>
 
-                      {p.description && (
+                      {locP.description && (
                         <p style={{ margin: '4px 0 6px', color: '#475569', fontSize: '11.5px', lineHeight: 1.45 }}>
-                          {p.description}
+                          {locP.description}
                         </p>
                       )}
 

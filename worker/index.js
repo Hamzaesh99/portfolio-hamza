@@ -59,6 +59,50 @@ function jsonResponse(data, status = 200, headers = {}) {
   });
 }
 
+// Structured English Project Translations Dictionary
+const PROJECT_TRANSLATIONS = {
+  '2d23f2dd-e3fe-442a-a6cc-bcf7c15b28c8': {
+    title: '🏠 Tashile – Smart Real Estate Marketing Platform',
+    description: `🔐 User Management & Authentication System in Tashile Platform\n\nThe platform supports two types of users:\n\n1. Real Estate Company\n• Account registration via email.\n• Secure email and password login.\n• Email verification.\n• Password recovery.\n• Company profile management.\n• Adding and managing property listings.\n• Receiving and managing property viewing requests.\n\n2. Client\n• Account creation via email.\n• Email and password authentication.\n• Email verification.\n• Password recovery.\n• Personal profile management.\n• Property search and detailed viewing.\n• Property location analysis and surrounding amenities.\n• Booking appointments for property viewings.`,
+    long_description: `Comprehensive real estate marketing and property management web platform built with React.js, Supabase, and PostgreSQL. Features role-based access control for real estate agencies and individual buyers/renters, interactive Google Maps spatial exploration, automated schedule booking for property showings, and responsive modern UI.`,
+  },
+  '3fe51fd2-cc37-449c-9a47-8eb2a5b75967': {
+    title: 'Runway – AI-Powered Runway Damage Analysis & Assessment Platform',
+    description: `An intelligent platform leveraging artificial intelligence techniques to assess runway conditions across Libya and evaluate damage severity through image and geospatial data analysis. It identifies damage zones on dynamic heatmaps, generating preliminary reports detailing damage percentages, estimated maintenance costs in local and foreign currencies, anticipated risk levels, and maintenance progress tracking, along with analytical archiving for retrospective audit.`,
+    long_description: `Specialized engineering platform combining Computer Vision / AI image processing with GIS heatmapping to automate airport runway inspections. Computes structural degradation indexes, calculates multi-currency maintenance estimates, and archives historical assessments for aviation authorities.`,
+  },
+  '1d282878-4ffc-4542-a176-71bf5968fc66': {
+    title: 'Sanad Insurance – UI/UX Modernization & Enterprise Portal',
+    description: `Comprehensive redesign and frontend modernization of the Sanad Insurance enterprise system. Built to establish a cohesive visual identity reflecting trust and professionalism in the insurance sector, optimizing user workflows, restructuring UI components, and delivering high-performance, modern, and responsive internal dashboards.`,
+    long_description: `Enterprise-grade portal redesign for Sanad Insurance. Streamlines policy lifecycle workflows, claim submission portals, and internal agent management with custom design tokens, accessible components, and responsive layouts.`,
+  },
+  '5d86a084-7ff2-4073-8a1b-02080b4a060d': {
+    title: 'Moasher – Academic Decision Support & Dropout Prediction System (Fezzan University)',
+    description: `An end-to-end academic decision support platform for Fezzan University designed to evaluate student academic performance and predict students at risk of academic probation or dropout. Features role-based dashboards, department and course management, GPA calculations, risk-tier analytics, and AI-driven risk factor identification with actionable institutional recommendations.`,
+    long_description: `Decision-support system for higher education combining Next.js 14, Django REST Framework, XGBoost predictive modeling, and SHAP interpretability. Enables academic deans to spot early warning signs of student attrition and initiate targeted academic interventions.`,
+  },
+  '442d620f-39e9-4dee-ab9a-84bb4bd0529e': {
+    title: 'Madar Al-Elm – Comprehensive School Management ERP System',
+    description: `A comprehensive ERP solution orchestrating academic, administrative, and financial workflows for Madar Al-Elm School. Provides multi-role RBAC access control with tailored portals for administrators, teachers, parents, and students. Manages tuition installments, fee payments, automated receipts, academic reporting, real-time attendance tracking, exam scheduling, gradebooks, and extracurricular activities.`,
+    long_description: `Full-featured educational ERP system managing student records, gradebook calculations, daily attendance, automated payment installments, and official PDF grade transcripts with complete audit logs and secure role-based permissions.`,
+  },
+  'ffb948e5-2976-4065-acd8-1bd5d3b28d9a': {
+    title: 'Food Janzour – Corporate Wholesale Food Distribution Portal',
+    description: `A corporate web platform for Food Janzour Co., specializing in wholesale food supply and distribution across Janzour, Tripoli, and Libya. Showcases wholesale product portfolios, logistical services, location navigation, and direct inquiry channels.\n\nHighlights supply lines in canned goods, cooking oils, grains and legumes, dairy and cheeses, frozen meats, and beverages.`,
+    long_description: `Corporate commercial portal developed for Food Janzour Co. with responsive product catalogs, inquiry forms, interactive Google Maps integration, and customized business domain email connectivity.`,
+  },
+  '72cc9456-0aac-422d-ae03-31a6156c9427': {
+    title: 'Janzour Electronics – Official Corporate Web Platform',
+    description: `A modern corporate website for Janzour Electronics developed to highlight commercial electronics products, warranties, and enterprise services. Offers an ultra-responsive browsing experience across devices, interactive Google Maps location integration, and custom enterprise business email integration to reinforce brand identity and client communication.`,
+    long_description: `High-performance bilingual digital showcase for Janzour Electronics featuring responsive catalog browsing, customer support contact forms, Google Maps navigation, and corporate email integration.`,
+  },
+  '0ef1a07b-62e4-4324-8b58-479b097d4036': {
+    title: 'MyLabLink – Smart Medical Laboratory Results Management Platform',
+    description: `An intelligent and secure web platform for medical lab results management and tracking, seamlessly interconnecting patients, physicians, and diagnostic laboratories. Enables instant patient access to digital test reports, automated release notifications, historical biomarker trend visualization, and specialized clinical dashboards for physicians to monitor patient diagnostic progress.`,
+    long_description: `HealthTech portal connecting diagnostic laboratories with clinics and patients. Features 2-factor authentication, verified electronic test result delivery, historical diagnostic charting, and encrypted communication channels.`,
+  },
+};
+
 // Helper to format projects
 function formatProject(project) {
   if (!project) return null;
@@ -77,8 +121,20 @@ function formatProject(project) {
   } catch {
     technologies = typeof project.technologies === 'string' ? project.technologies.split(',').map(t => t.trim()) : [];
   }
+
+  const trans = PROJECT_TRANSLATIONS[project.id] || {};
+  const title_en = project.title_en || trans.title || project.title;
+  const description_en = project.description_en || trans.description || project.description;
+  const long_description_en = project.long_description_en || trans.long_description || project.long_description || description_en;
+
   return {
     ...project,
+    title_ar: project.title,
+    description_ar: project.description,
+    long_description_ar: project.long_description,
+    title_en,
+    description_en,
+    long_description_en,
     images: images.slice(0, 5),
     image_url: images[0] || project.image_url || null,
     technologies,
